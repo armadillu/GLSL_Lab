@@ -7,8 +7,12 @@
 
 class testApp : public ofBaseApp{
 
-	enum models{MODEL_TEAPOT = 0, MODEL_DISNEY, MODEL_KOOPA, MODEL_WARIO, MODEL_ROBOT, MODEL_SONIC, NUM_MODELS};
-	enum Shaders{SHADER_1 = 0, SHADER_2, SHADER_3, NUM_SHADERS};
+	enum models{
+				MODEL_TEAPOT = 0, MODEL_DISNEY, MODEL_KOOPA, MODEL_WARIO,
+				MODEL_ROBOT, MODEL_SONIC, MODEL_HYDRALISK, MODEL_ZERLING,
+				MODEL_MARIO, MODEL_CHARIZARD, MODEL_LINK, MODEL_PENGUIN,
+				MODEL_LUIGI, NUM_MODELS};
+	enum Shaders{SHADER_1 = 0, SHADER_2, SHADER_3, SHADER_4, NUM_SHADERS};
 
 	ofEasyCam	cam;
 	vector<ofxAutoReloadedShader*> shaders;
@@ -60,7 +64,7 @@ class testApp : public ofBaseApp{
 		void update();
 		void draw();
 
-	void loadModel(string m);
+	void loadModel(string m, float voffset = -70, float scale = 0.3);
 	void loadShader(string s);
 	void normalize(ofxAssimpModelLoader * m);
 	void exit();

@@ -11,6 +11,7 @@ void testApp::setup(){
 
 	ofDisableArbTex();
 	tex.loadImage("tex.png");
+	tex.getTextureReference().setTextureWrap(GL_REPEAT, GL_REPEAT);
 	normalTex.loadImage("gatoNormals.png");
 	normalTex.getTextureReference().setTextureWrap(GL_REPEAT, GL_REPEAT);
 	normalNoiseTex.loadImage("normalNoise.png");
@@ -22,7 +23,7 @@ void testApp::setup(){
 	isShaderDirty = true;
 
 	cam.setDistance(700);
-	cam.setFov(30);
+	cam.setDrag(0.997);
 
 	light.enable();
 	glEnable(GL_DEPTH_TEST);
@@ -34,17 +35,17 @@ void testApp::setup(){
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(doShader);
 
 	vector<string> shL; shL.push_back("SHADER_1"); shL.push_back("SHADER_2");
-	shL.push_back("SHADER_3"); 
+	shL.push_back("SHADER_3"); shL.push_back("SHADER_4");
 	OFX_REMOTEUI_SERVER_SHARE_ENUM_PARAM(currentShader, SHADER_1, NUM_SHADERS-1, shL);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	vector<string> modelL; modelL.push_back("MODEL_TEAPOT"); modelL.push_back("MODEL_KOOPA");
-	modelL.push_back("MODEL_DISNEY");
-	modelL.push_back("MODEL_WARIO"); modelL.push_back("MODEL_ROBOT");
-	modelL.push_back("MODEL_SONIC");
+	modelL.push_back("WALT DISNEY"); modelL.push_back("WARIO"); modelL.push_back("ROBOT");
+	modelL.push_back("SONIC"); modelL.push_back("HYDRALISK"); modelL.push_back("ZERGLING");
+	modelL.push_back("MARIO"); modelL.push_back("CHARIZARD"); modelL.push_back("LINK");
+	modelL.push_back("PENGUIN"); modelL.push_back("LUIGI");
 	OFX_REMOTEUI_SERVER_SHARE_ENUM_PARAM(shownModel, MODEL_TEAPOT, NUM_MODELS-1, modelL);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(drawAxes);
-
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(diffuseGain,0,2);
@@ -54,7 +55,6 @@ void testApp::setup(){
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(specularGain,0,2);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(specularClamp,0,1);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(specularPow,0,2);
-
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SET_UPCOMING_PARAM_GROUP("LIGHT");
@@ -69,7 +69,6 @@ void testApp::setup(){
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(animateCam);
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(fov, 20, 120);
-
 
 	OFX_REMOTEUI_SERVER_SET_UPCOMING_PARAM_GROUP("COLORS");
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
@@ -91,16 +90,27 @@ void testApp::setup(){
 
 	OFX_REMOTEUI_SERVER_LOAD_FROM_XML();
 
+	cam.setFov(fov);
+
 	loadModel("WaltDisneyHeadsHigh.3ds");
 	loadModel("koopa.3ds");
 	loadModel("WaltDisneyHeadsHigh.3ds");
 	loadModel("Wario.3ds");
 	loadModel("Robot.3ds");
 	loadModel("sonic.3ds");
+	loadModel("hydralisk.3DS", -10, 0.5);
+	loadModel("zergling.3DS", -20, 0.5);
+	loadModel("mario.3DS");
+	loadModel("charizard.3DS");
+	loadModel("link.3DS");
+	loadModel("penguin.3DS");
+	loadModel("luigi.3DS");
+
 
 	loadShader("shaders/shader1");
 	loadShader("shaders/shader2");
 	loadShader("shaders/shader3");
+	loadShader("shaders/shader4");
 }
 
 void testApp::loadShader(string s){
@@ -118,14 +128,14 @@ void testApp::loadShader(string s){
 }
 
 
-void testApp::loadModel(string m){
+void testApp::loadModel(string m, float voffset, float scale){
 
 	ofxAssimpModelLoader * model = new ofxAssimpModelLoader();
 	model->loadModel(m, true);
-	model->setPosition(0, -80, 0);
+	model->setPosition(0, voffset, 0);
 	model->setRotation(0, 180, 1, 0, 0);
 	model->setRotation(0, 180, 0, 0, 1);
-    model->setScale(0.3, 0.3, 0.3);
+    model->setScale(scale, scale, scale);
 	model->stopAllAnimations();
 	//normalize(model);
 	models.push_back(model);
@@ -198,6 +208,7 @@ void testApp::draw(){
 		ofSphere(lightPos.x, lightPos.y, lightPos.z, 3);
 
 		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_CULL_FACE);
 		ofEnableLighting();
 		light.enable();
 		glDisable(GL_COLOR_MATERIAL);
@@ -225,7 +236,7 @@ void testApp::draw(){
 
 		switch (shownModel) {
 			case MODEL_TEAPOT:
-				glutSolidTeapot(80);
+				glutSolidTeapot(60);
 				break;
 
 			default:
