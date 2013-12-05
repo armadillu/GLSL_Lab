@@ -4,6 +4,8 @@
 #include "ofxAutoReloadedShader.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxShadow.h"
+#include "ofxFboBlur.h"
 
 class testApp : public ofBaseApp{
 
@@ -15,11 +17,15 @@ class testApp : public ofBaseApp{
 	enum Shaders{SHADER_1 = 0, SHADER_2, SHADER_3, SHADER_4, NUM_SHADERS};
 
 	ofEasyCam	cam;
+	ofVec3f		camLookAtModelOffset;
 	vector<ofxAutoReloadedShader*> shaders;
 	ofMaterial	mMatMainMaterial;
 
 	ofVec3f		lightPos;
 	ofLight		light;
+
+	ofxShadow	simple_shadow;
+	ofxFboBlur	gpuBlur;
 	
 	bool		isShaderDirty;
 
@@ -49,11 +55,17 @@ class testApp : public ofBaseApp{
 	float shaderVal1, shaderVal2, shaderVal3;
 	ofColor shaderColorInput;
 
+	ofColor bgColor;
+
+	float shadowY;
+	float shadowAlpha;
+
 	float lightH;
 
 	vector<ofxAssimpModelLoader*> models;
 
 	ofImage tex;
+	ofImage reflectionTex;
 	ofImage normalTex;
 	ofImage normalNoiseTex;
 	ofImage normalLavaTex;
@@ -64,11 +76,14 @@ class testApp : public ofBaseApp{
 		void update();
 		void draw();
 
-	void loadModel(string m, float voffset = -70, float scale = 0.3);
+	void drawModel();
+
+	void loadModel(string m, float voffset = -00, float scale = 0.3);
 	void loadShader(string s);
 	void normalize(ofxAssimpModelLoader * m);
-	void exit();
 
 	void keyPressed  (int key);
+
+	void windowResized(int w, int h);
 		
 };

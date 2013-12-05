@@ -49,22 +49,22 @@ void main( void ){
 	
 
 	//float d = distance(N, L);
-	vec3 X =(N);
+	//vec3 X =(N);
 	
-	float weird = 1.0 - dot(E, N); // side/edge glow
-	weird = pow(weird, shaderVal2 * 3.0);
+	//float weird = 1.0 - dot(E, N); // side/edge glow
+	//weird = pow(weird, shaderVal2 * 3.0);
 
-	float weird2 = 1.0 - pow( dot(mix(N, Ndirty, shaderVal3) , vec3(0.0, 1.0, 0.0) ), shaderVal2 );
-	
+	vec3 reflectDir = normalize( vec3( 1.0 - cos(time), cos(time), sin(time) ) );
+	float weird2 = pow( 1.0 - pow( dot( mix(N, Ndirty, shaderVal3) , reflectDir ), shaderVal2 ), shaderVal1 * 20.0);
+	float specular = 0.0;
 	if(lambertTerm  > 0.0){
 		diffuseV += diffuseGain * gl_LightSource[0].diffuse * gl_FrontMaterial.diffuse * pow(lambertTerm , diffusePow );
 
 		// SPECULAR /////////////////////////////////
-		float specular = specularGain * clamp( pow( max(dot(R,E), 0.0), gl_FrontMaterial.shininess * specularPow ), 0.0, specularClamp);
+		specular = specularGain * clamp( pow( max(dot(R,E), 0.0), gl_FrontMaterial.shininess * specularPow ), 0.0, specularClamp);
 		specularV = gl_LightSource[0].specular * gl_FrontMaterial.specular * specular ;	
 	}
-	//gl_FragColor = ambientV + diffuseV  + specularV  + shaderVal1 * shaderColorInput  * weird ;
-	gl_FragColor = ambientV + diffuseV  + specularV  + shaderVal1 * shaderColorInput  * weird2 ;
+	gl_FragColor = ambientV + diffuseV  + specularV + shaderColorInput * weird2 * specular;
 	
 	//gl_FragColor =  vec4(weird,weird,weird,1.0);	
 	//gl_FragColor =  vec4(weird2,weird2,weird2,1.0);	

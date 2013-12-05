@@ -27,6 +27,7 @@
 		BB696C121777B34E00C7D0D9 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB696BFF1777B34E00C7D0D9 /* tinyxmlerror.cpp */; };
 		BB696C131777B34E00C7D0D9 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB696C001777B34E00C7D0D9 /* tinyxmlparser.cpp */; };
 		BB696C141777B34E00C7D0D9 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB696C021777B34E00C7D0D9 /* ofxXmlSettings.cpp */; };
+		BB7EA655184BA2FD00048F7A /* ofxShadow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7EA64A184BA2FC00048F7A /* ofxShadow.cpp */; };
 		BB93F0051847FE70006CE010 /* assimp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB93EFFA1847FE70006CE010 /* assimp.a */; };
 		BB93F0061847FE70006CE010 /* ofxAssimpAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB93EFFC1847FE70006CE010 /* ofxAssimpAnimation.cpp */; };
 		BB93F0071847FE70006CE010 /* ofxAssimpMeshHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB93EFFE1847FE70006CE010 /* ofxAssimpMeshHelper.cpp */; };
@@ -133,6 +134,11 @@
 		BB696C001777B34E00C7D0D9 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		BB696C021777B34E00C7D0D9 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
 		BB696C031777B34E00C7D0D9 /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
+		BB7EA61A184BA2FC00048F7A /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		BB7EA648184BA2FC00048F7A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		BB7EA64A184BA2FC00048F7A /* ofxShadow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxShadow.cpp; sourceTree = "<group>"; };
+		BB7EA64B184BA2FC00048F7A /* ofxShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxShadow.h; sourceTree = "<group>"; };
+		BB7EA661184BAF2400048F7A /* ofxFboBlur.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFboBlur.h; sourceTree = "<group>"; };
 		BB93EFCF1847FE70006CE010 /* addon_config.mk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = addon_config.mk; sourceTree = "<group>"; };
 		BB93EFD31847FE70006CE010 /* aiAnim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aiAnim.h; sourceTree = "<group>"; };
 		BB93EFD41847FE70006CE010 /* aiAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aiAssert.h; sourceTree = "<group>"; };
@@ -242,6 +248,8 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				BB7EA65F184BAF2400048F7A /* ofxFboBlur */,
+				BB7EA619184BA2FC00048F7A /* ofxShadow */,
 				BB93EFCE1847FE70006CE010 /* ofxAssimpModelLoader */,
 				BB696BD11777B34E00C7D0D9 /* ofxOsc */,
 				BB696BFB1777B34E00C7D0D9 /* ofxXmlSettings */,
@@ -408,6 +416,43 @@
 				BB696C031777B34E00C7D0D9 /* ofxXmlSettings.h */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		BB7EA619184BA2FC00048F7A /* ofxShadow */ = {
+			isa = PBXGroup;
+			children = (
+				BB7EA61A184BA2FC00048F7A /* .gitignore */,
+				BB7EA648184BA2FC00048F7A /* README.md */,
+				BB7EA649184BA2FC00048F7A /* src */,
+			);
+			name = ofxShadow;
+			path = ../../../addons/ofxShadow;
+			sourceTree = "<group>";
+		};
+		BB7EA649184BA2FC00048F7A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BB7EA64A184BA2FC00048F7A /* ofxShadow.cpp */,
+				BB7EA64B184BA2FC00048F7A /* ofxShadow.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		BB7EA65F184BAF2400048F7A /* ofxFboBlur */ = {
+			isa = PBXGroup;
+			children = (
+				BB7EA660184BAF2400048F7A /* src */,
+			);
+			name = ofxFboBlur;
+			sourceTree = "<group>";
+		};
+		BB7EA660184BAF2400048F7A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BB7EA661184BAF2400048F7A /* ofxFboBlur.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxFboBlur/src;
 			sourceTree = "<group>";
 		};
 		BB93EFCE1847FE70006CE010 /* ofxAssimpModelLoader */ = {
@@ -727,6 +772,7 @@
 				BB696C0C1777B34E00C7D0D9 /* OscTypes.cpp in Sources */,
 				BB93F0071847FE70006CE010 /* ofxAssimpMeshHelper.cpp in Sources */,
 				BB696C0D1777B34E00C7D0D9 /* ofxOscBundle.cpp in Sources */,
+				BB7EA655184BA2FD00048F7A /* ofxShadow.cpp in Sources */,
 				BB696C0E1777B34E00C7D0D9 /* ofxOscMessage.cpp in Sources */,
 				BB696C0F1777B34E00C7D0D9 /* ofxOscReceiver.cpp in Sources */,
 				BB696C101777B34E00C7D0D9 /* ofxOscSender.cpp in Sources */,
