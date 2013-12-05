@@ -25,7 +25,8 @@ class testApp : public ofBaseApp{
 	ofLight		light;
 
 	ofxShadow	simple_shadow;
-	ofxFboBlur	gpuBlur;
+	ofxFboBlur	shadowBlur;
+	ofxFboBlur	sceneBlur;
 	
 	bool		isShaderDirty;
 

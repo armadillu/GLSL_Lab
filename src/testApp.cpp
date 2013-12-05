@@ -39,15 +39,24 @@ void testApp::setup(){
 	s.maxFilter = GL_LINEAR; GL_NEAREST;
 	s.numSamples = 4;
 	s.numColorbuffers = 3;
-	s.useDepth = false;
+	s.useDepth = true;
 	s.useStencil = false;
 
-	gpuBlur.setup(s, false);
-	gpuBlur.setBackgroundColor(ofColor(0,0));
-	gpuBlur.blurOffset = 0.2;
-	gpuBlur.blurPasses = 1;
-	gpuBlur.numBlurOverlays =  1;
-	gpuBlur.blurOverlayGain = 255;
+	shadowBlur.setup(s, false);
+	shadowBlur.setBackgroundColor(ofColor(0,0));
+	shadowBlur.blurOffset = 0.2;
+	shadowBlur.blurPasses = 1;
+	shadowBlur.numBlurOverlays =  1;
+	shadowBlur.blurOverlayGain = 255;
+
+	sceneBlur.setup(s, true);
+	sceneBlur.setBackgroundColor(ofColor(0,0));
+	sceneBlur.blurOffset = 0.2;
+	sceneBlur.blurPasses = 1;
+	sceneBlur.numBlurOverlays =  1;
+	sceneBlur.blurOverlayGain = 255;
+
+
 
 	light.enable();
 	glEnable(GL_DEPTH_TEST);
@@ -94,8 +103,12 @@ void testApp::setup(){
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowAlpha,0,1);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
-	OFX_REMOTEUI_SERVER_SHARE_PARAM(gpuBlur.blurPasses,0,5);
-	OFX_REMOTEUI_SERVER_SHARE_PARAM(gpuBlur.blurOffset,0,5);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowBlur.blurPasses,0,5);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowBlur.blurOffset,0,5);
+
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.blurPasses,0,5);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.blurOffset,0,5);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.numBlurOverlays,0,5);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(animateLight);
@@ -156,10 +169,12 @@ void testApp::windowResized(int w, int h){
 	s.maxFilter = GL_LINEAR; GL_NEAREST;
 	s.numSamples = 4;
 	s.numColorbuffers = 3;
-	s.useDepth = false;
+	s.useDepth = true;
 	s.useStencil = false;
 
-	gpuBlur.setup(s, false);
+	shadowBlur.setup(s, false);
+	sceneBlur.setup(s, false);
+
 	simple_shadow.setup(&cam);
 }
 
@@ -253,7 +268,7 @@ void testApp::draw(){
 	light.disable();
 	ofDisableLighting();
 
-	gpuBlur.beginDrawScene(); //blurscene only has shadow
+	shadowBlur.beginDrawScene(); //blurscene only has shadow
 		ofClear(255, 255, 255, 0);
 
 		cam.begin();
@@ -262,14 +277,17 @@ void testApp::draw(){
 			drawModel();
 			simple_shadow.end();
 		cam.end();
-	gpuBlur.endDrawScene();
+	shadowBlur.endDrawScene();
 
 	glDisable(GL_DEPTH_TEST);
-	gpuBlur.performBlur();
+	shadowBlur.performBlur();
 
 	ofSetColor( 255, 255 * shadowAlpha);
-	//gpuBlur.drawSceneFBO();
-	gpuBlur.drawBlurFbo(true);
+	//shadowBlur.drawSceneFBO();
+	shadowBlur.drawBlurFbo(true);
+
+	/**/sceneBlur.beginDrawScene();
+	ofClear(255, 255, 255, 0);
 
 	//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 	light.enable();
@@ -323,9 +341,15 @@ void testApp::draw(){
 
 	glDisable(GL_DEPTH_TEST);
 
-	////////////////////////////////////////////////////////////
+/**/	sceneBlur.endDrawScene();
 
-	//ofSetupScreen();
+	sceneBlur.performBlur();
+
+	sceneBlur.drawSceneFBO();
+
+	ofEnableBlendMode(OF_BLENDMODE_ADD);
+	sceneBlur.drawBlurFbo();
+	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 
 }
 
