@@ -6,7 +6,7 @@ void testApp::setup(){
 
 	ofBackground(200);
 	ofSetVerticalSync(true);
-	ofSetFrameRate(60);
+	ofSetFrameRate(64);
 	ofEnableAlphaBlending();
 	if(ofGetWindowMode() == OF_WINDOW) ofSetWindowPosition(20, 20);
 
@@ -42,20 +42,19 @@ void testApp::setup(){
 	s.useDepth = true;
 	s.useStencil = false;
 
-	shadowBlur.setup(s, false);
-	shadowBlur.setBackgroundColor(ofColor(0,0));
+	shadowBlur.setup(s, true);
+	shadowBlur.setBackgroundColor(shadowColor);
 	shadowBlur.blurOffset = 0.2;
 	shadowBlur.blurPasses = 1;
 	shadowBlur.numBlurOverlays =  1;
 	shadowBlur.blurOverlayGain = 255;
 
-	sceneBlur.setup(s, true);
-	sceneBlur.setBackgroundColor(ofColor(0,0));
+	sceneBlur.setup(s, false);
+	sceneBlur.setBackgroundColor(ofColor(0,255));
 	sceneBlur.blurOffset = 0.2;
 	sceneBlur.blurPasses = 1;
 	sceneBlur.numBlurOverlays =  1;
 	sceneBlur.blurOverlayGain = 255;
-
 
 
 	light.enable();
@@ -100,21 +99,23 @@ void testApp::setup(){
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowY,-100,100);
-	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowAlpha,0,1);
+	OFX_REMOTEUI_SERVER_SHARE_COLOR_PARAM(shadowColor);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowBlur.blurPasses,0,5);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shadowBlur.blurOffset,0,5);
 
+	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.blurPasses,0,5);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.blurOffset,0,5);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.numBlurOverlays,0,5);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(sceneBlur.blurOverlayGain,0,255);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(animateLight);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(animateCam);
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
-	OFX_REMOTEUI_SERVER_SHARE_PARAM(fov, 20, 120);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(fov, 10, 120);
 
 	OFX_REMOTEUI_SERVER_SET_UPCOMING_PARAM_GROUP("COLORS");
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
@@ -130,6 +131,7 @@ void testApp::setup(){
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shaderVal1,0,2);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shaderVal2,0,2);
 	OFX_REMOTEUI_SERVER_SHARE_PARAM(shaderVal3,0,2);
+	OFX_REMOTEUI_SERVER_SHARE_PARAM(shaderVal4,0,2);
 
 	OFX_REMOTEUI_SERVER_SET_NEW_COLOR();
 	OFX_REMOTEUI_SERVER_SHARE_COLOR_PARAM(shaderColorInput);
@@ -138,19 +140,18 @@ void testApp::setup(){
 
 	cam.setFov(fov);
 
-
 	loadModel("WaltDisneyHeadsHigh.3ds");
 	loadModel("koopa.3ds");
 	loadModel("WaltDisneyHeadsHigh.3ds");
 	loadModel("Wario.3ds");
 	loadModel("Robot.3ds");
 	loadModel("sonic.3ds");
-	loadModel("hydralisk.3DS", -10, 0.5);
-	loadModel("zergling.3DS", -20, 0.5);
+	loadModel("hydralisk.3DS", 0, 0.5);
+	loadModel("zergling.3DS", 0, 0.5);
 	loadModel("mario.3DS");
 	loadModel("charizard.3DS");
 	loadModel("link.3DS");
-	loadModel("penguin.3DS");
+	loadModel("dragon.obj");
 	loadModel("luigi.3DS");
 
 	loadShader("shaders/shader1");
@@ -167,7 +168,7 @@ void testApp::windowResized(int w, int h){
 	s.internalformat = GL_RGBA;
 	s.textureTarget = GL_TEXTURE_RECTANGLE_ARB;
 	s.maxFilter = GL_LINEAR; GL_NEAREST;
-	s.numSamples = 4;
+	s.numSamples = 8;
 	s.numColorbuffers = 3;
 	s.useDepth = true;
 	s.useStencil = false;
@@ -235,8 +236,10 @@ void testApp::update(){
 	light.setSpecularColor(lightSpecular);
 
 	simple_shadow.setLightPosition(light.getGlobalPosition());
-	simple_shadow.setShadowColor( ofFloatColor(0, 1.0) );
-
+	simple_shadow.setShadowColor( shadowColor );
+//	ofColor tempC = bgColor;
+//	tempC.a = 0;
+	shadowBlur.setBackgroundColor(shadowColor);
 
 	if(animateLight || ofGetFrameNum() < 2){
 		float r = lightDist;
@@ -264,12 +267,13 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 
+
 	//shadow
 	light.disable();
 	ofDisableLighting();
 
-	shadowBlur.beginDrawScene(); //blurscene only has shadow
-		ofClear(255, 255, 255, 0);
+	shadowBlur.beginDrawScene();
+		ofClear(bgColor);//shadow bg is white
 
 		cam.begin();
 			simple_shadow.begin();
@@ -282,71 +286,90 @@ void testApp::draw(){
 	glDisable(GL_DEPTH_TEST);
 	shadowBlur.performBlur();
 
-	ofSetColor( 255, 255 * shadowAlpha);
-	//shadowBlur.drawSceneFBO();
-	shadowBlur.drawBlurFbo(true);
+	sceneBlur.beginDrawScene();  /****************************/
+//		ofColor tempC = bgColor;
+//		tempC.a = 0;
+//		ofClear(tempC);
 
-	/**/sceneBlur.beginDrawScene();
-	ofClear(255, 255, 255, 0);
-
-	//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-	light.enable();
-	cam.begin();
+		ofClear(bgColor);
 		ofSetColor(255);
-		ofSphere(lightPos.x, lightPos.y, lightPos.z, 3);
 
-		glEnable(GL_DEPTH_TEST);
-		//glEnable(GL_CULL_FACE);
-		ofEnableLighting();
+		//shadow
+		//ofEnableBlendMode(OF_BLENDMODE_ADD);
+		shadowBlur.drawBlurFbo(true);
+
+
+		//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 		light.enable();
-		glDisable(GL_COLOR_MATERIAL);
-		mMatMainMaterial.begin();
+		cam.begin();
+			ofSetColor(255);
+			ofSphere(lightPos.x, lightPos.y, lightPos.z, 3);
 
-		if(doShader){
+			glEnable(GL_DEPTH_TEST);
+			//glEnable(GL_CULL_FACE);
+			ofEnableLighting();
+			light.enable();
+			glDisable(GL_COLOR_MATERIAL);
+			mMatMainMaterial.begin();
 
-			shaders[(int)currentShader]->begin();
+			if(doShader){
 
-			shaders[(int)currentShader]->setUniformTexture("tex", tex, tex.getTextureReference().getTextureData().textureID);
-			shaders[(int)currentShader]->setUniformTexture("reflectionTex", reflectionTex, reflectionTex.getTextureReference().getTextureData().textureID);
-			shaders[(int)currentShader]->setUniform1f("time", ofGetElapsedTimef() * timeSpeed);
+				shaders[(int)currentShader]->begin();
 
-			shaders[(int)currentShader]->setUniform1f("diffuseGain", diffuseGain);
-			shaders[(int)currentShader]->setUniform1f("diffusePow", diffusePow);
+				shaders[(int)currentShader]->setUniformTexture("tex", tex, tex.getTextureReference().getTextureData().textureID);
+				shaders[(int)currentShader]->setUniformTexture("reflectionTex", reflectionTex, reflectionTex.getTextureReference().getTextureData().textureID);
+				shaders[(int)currentShader]->setUniform1f("time", ofGetElapsedTimef() * timeSpeed);
 
-			shaders[(int)currentShader]->setUniform1f("specularGain", specularGain);
-			shaders[(int)currentShader]->setUniform1f("specularClamp", specularClamp);
-			shaders[(int)currentShader]->setUniform1f("specularPow", specularPow);
-			shaders[(int)currentShader]->setUniform1f("shaderVal1", shaderVal1);
-			shaders[(int)currentShader]->setUniform1f("shaderVal2", shaderVal2);
-			shaders[(int)currentShader]->setUniform1f("shaderVal3", shaderVal3);
-			shaders[(int)currentShader]->setUniform4f("shaderColorInput", shaderColorInput.r/255., shaderColorInput.g/255., shaderColorInput.b/255., shaderColorInput.a/255.);
+				shaders[(int)currentShader]->setUniform1f("diffuseGain", diffuseGain);
+				shaders[(int)currentShader]->setUniform1f("diffusePow", diffusePow);
 
-		}
-	ofPushMatrix();
-	ofTranslate(0, shadowY, 0);
-			drawModel();
-	ofPopMatrix();
+				shaders[(int)currentShader]->setUniform1f("specularGain", specularGain);
+				shaders[(int)currentShader]->setUniform1f("specularClamp", specularClamp);
+				shaders[(int)currentShader]->setUniform1f("specularPow", specularPow);
+				shaders[(int)currentShader]->setUniform1f("shaderVal1", shaderVal1);
+				shaders[(int)currentShader]->setUniform1f("shaderVal2", shaderVal2);
+				shaders[(int)currentShader]->setUniform1f("shaderVal3", shaderVal3);
+				shaders[(int)currentShader]->setUniform1f("shaderVal4", shaderVal4);
+				shaders[(int)currentShader]->setUniform4f("shaderColorInput", shaderColorInput.r/255., shaderColorInput.g/255., shaderColorInput.b/255., shaderColorInput.a/255.);
 
-		if(doShader){
-			shaders[(int)currentShader]->end();
-		}
-		simple_shadow.end();
-		mMatMainMaterial.end();
-		ofDisableLighting();
+			}
+		ofPushMatrix();
+		ofTranslate(0, shadowY, 0);
+				drawModel();
+		ofPopMatrix();
 
-		ofSetColor(255);
-		if(drawAxes)ofDrawAxis(100);
+			if(doShader){
+				shaders[(int)currentShader]->end();
+			}
+			simple_shadow.end();
+			mMatMainMaterial.end();
+			ofDisableLighting();
 
-	cam.end();
+			ofSetColor(255);
+			if(drawAxes)ofDrawAxis(100);
 
-	glDisable(GL_DEPTH_TEST);
+		cam.end();
 
-/**/	sceneBlur.endDrawScene();
+		glDisable(GL_DEPTH_TEST);
+
+	sceneBlur.endDrawScene(); /****************************/
 
 	sceneBlur.performBlur();
 
+	/* real drawing below */
+	//bg
+	ofClear(bgColor);
+	ofSetColor(255);
+
+	//shadow
+	//ofEnableBlendMode(OF_BLENDMODE_ADD);
+	shadowBlur.drawBlurFbo(true);
+
+	//plain scene
+	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 	sceneBlur.drawSceneFBO();
 
+	//scene blur overlay
 	ofEnableBlendMode(OF_BLENDMODE_ADD);
 	sceneBlur.drawBlurFbo();
 	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
@@ -373,5 +396,6 @@ void testApp::drawModel(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-
+	animateLight = !animateLight;
+	OFX_REMOTEUI_SERVER_GET_INSTANCE()->pushParamsToClient();
 }

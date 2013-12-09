@@ -5,7 +5,7 @@
 //--------------------------------------------------------------
 int main(){
 	ofAppGLFWWindow win;
-	win.setNumSamples(16);
+	win.setNumSamples(8);
 	win.setMultiDisplayFullscreen(true);
 
 	ofSetupOpenGL(&win, 1024,768, OF_WINDOW);	// <-------- setup the GL context

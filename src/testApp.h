@@ -27,6 +27,7 @@ class testApp : public ofBaseApp{
 	ofxShadow	simple_shadow;
 	ofxFboBlur	shadowBlur;
 	ofxFboBlur	sceneBlur;
+	ofColor shadowColor;
 	
 	bool		isShaderDirty;
 
@@ -53,13 +54,12 @@ class testApp : public ofBaseApp{
 	float diffuseGain, diffusePow;
 	float specularGain, specularClamp, specularPow;
 
-	float shaderVal1, shaderVal2, shaderVal3;
+	float shaderVal1, shaderVal2, shaderVal3, shaderVal4;
 	ofColor shaderColorInput;
 
 	ofColor bgColor;
 
 	float shadowY;
-	float shadowAlpha;
 
 	float lightH;
 
